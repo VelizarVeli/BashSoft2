@@ -5,8 +5,13 @@
     class InputReader
     {
         private const string endCommand = "quit";
+        private CommandInterpreter interpreter;
 
-        public static void StartReadingCommands()
+        public InputReader(CommandInterpreter interpreter)
+        {
+            this.interpreter = interpreter;
+        }
+        public void StartReadingCommands()
         {
             while (true)
             {
@@ -19,7 +24,7 @@
                     break;
                 }
 
-                CommandInterpreter.InterpredCommand(input);
+                this.interpreter.InterpredCommand(input);
             }
         }
     }
