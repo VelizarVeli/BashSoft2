@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BashSoft.Exceptions;
 using BashSoft.NetCore;
 
 namespace BashSoft.Models
 {
     public class Student
     {
-        public string userName;
-        public Dictionary<string, Course> enrolledCourses;
-        public Dictionary<string, double> marksByCourseName;
+        private string userName;
+        private Dictionary<string, Course> enrolledCourses;
+        private Dictionary<string, double> marksByCourseName;
 
         public Student(string userName)
         {
@@ -19,17 +20,28 @@ namespace BashSoft.Models
             this.marksByCourseName = new Dictionary<string, double>();
         }
 
+        public IReadOnlyDictionary<string, Course> EnrolledCourses
+        {
+            get { return enrolledCourses; }
+        }
+
+        public IReadOnlyDictionary<string, double> MarksByCourseName
+        {
+            get { return marksByCourseName; }
+        }
+
         public string Username
         {
             get { return userName; }
+
             private set
             {
                 if (String.IsNullOrEmpty(value))
                 {
-                    throw new InvalidStringException();
+                    throw new ArgumentNullException(nameof(this.userName),ExceptionMessages.NullOrEmptyValue);
                 }
 
-                userName = value;
+                this.userName = value;
             }
         }
 
@@ -37,8 +49,7 @@ namespace BashSoft.Models
         {
             if (this.enrolledCourses.ContainsKey(course.name))
             {
-                OutputWriter.DisplayException(string.Format(ExceptionMessages.StudentAlreadyEnrolledInGivenCourse, this.userName, course.name));
-                return;
+                throw new DoubleEntryException(this.userName, course.Name);
             }
             this.enrolledCourses.Add(course.name, course);
         }
@@ -47,14 +58,12 @@ namespace BashSoft.Models
         {
             if (!this.enrolledCourses.ContainsKey(courseName))
             {
-                OutputWriter.DisplayException(ExceptionMessages.NotEnrolledInCourse);
-                return;
+                throw new NoCourseException(courseName);
             }
 
             if (scores.Length > Course.NumberOfTasksOnExam)
             {
-                OutputWriter.DisplayException(ExceptionMessages.InvalidNumberOfScores);
-                return;
+                throw new ArgumentOutOfRangeException($"{scores.Length}", ExceptionMessages.InvalidNumberOfScores);
             }
             this.marksByCourseName.Add(courseName,CalculateMark(scores));
         }

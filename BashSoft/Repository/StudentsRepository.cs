@@ -34,19 +34,17 @@ namespace BashSoft
             this.students = new Dictionary<string, Student>();
             this.courses = new Dictionary<string, Course>();
             this.ReadData(fileName);
-            //OutputWriter.WriteMessageOnNewLine("Reading data..."); не знам дали да го оставя
         }
 
         public void UnloadData()
         {
             if (!this.isDataInitialized)
             {
-                OutputWriter.DisplayException(ExceptionMessages.DataNotInitializedExceptionMessage);
+                throw new ArgumentException(ExceptionMessages.DataNotInitializedExceptionMessage);
             }
 
             this.students = null;
             this.courses = null;
-            //this.studentByCourse = new Dictionary<string, Dictionary<string, List<int>>>(); не знам дали да го оставя
             this.isDataInitialized = false;
         }
 
@@ -132,7 +130,7 @@ namespace BashSoft
 
         private bool IsQueryForStudentPossiblе(string courseName, string studentUserName)
         {
-            if (this.IsQueryForCoursePossible(courseName) && this.courses[courseName].studentsByName.ContainsKey(studentUserName))
+            if (this.IsQueryForCoursePossible(courseName) && this.courses[courseName].StudentsByName.ContainsKey(studentUserName))
             {
                 return true;
             }
@@ -148,7 +146,7 @@ namespace BashSoft
             if (IsQueryForStudentPossiblе(courseName, username))
             {
                 OutputWriter.PrintStudent(new KeyValuePair<string, double>(username, this.courses[courseName]
-                    .studentsByName[username].marksByCourseName[courseName]));
+                    .StudentsByName[username].MarksByCourseName[courseName]));
             }
         }
 
@@ -158,7 +156,7 @@ namespace BashSoft
             {
                 OutputWriter.WriteMessageOnNewLine($"{courseName}:");
 
-                foreach (var studentMarksEntry in this.courses[courseName].studentsByName)
+                foreach (var studentMarksEntry in this.courses[courseName].StudentsByName)
                 {
                     this.GetStudentScoresFromCourse(courseName, studentMarksEntry.Key);
                 }
@@ -171,11 +169,11 @@ namespace BashSoft
             {
                 if (studentsToTake == null)
                 {
-                    studentsToTake = this.courses[courseName].studentsByName.Count;
+                    studentsToTake = this.courses[courseName].StudentsByName.Count;
                 }
 
-                Dictionary<string, double> marks = this.courses[courseName].studentsByName
-                    .ToDictionary(x => x.Key, x => x.Value.marksByCourseName[courseName]);
+                Dictionary<string, double> marks = this.courses[courseName].StudentsByName
+                    .ToDictionary(x => x.Key, x => x.Value.MarksByCourseName[courseName]);
 
                 this.filter.FilterAndTake(marks, givenFilter, studentsToTake.Value);
             }
@@ -187,11 +185,11 @@ namespace BashSoft
             {
                 if (studentsToTake == null)
                 {
-                    studentsToTake = this.courses[courseName].studentsByName.Count;
+                    studentsToTake = this.courses[courseName].StudentsByName.Count;
                 }
 
-                Dictionary<string, double> marks = this.courses[courseName].studentsByName
-                    .ToDictionary(x => x.Key, x => x.Value.marksByCourseName[courseName]);
+                Dictionary<string, double> marks = this.courses[courseName].StudentsByName
+                    .ToDictionary(x => x.Key, x => x.Value.MarksByCourseName[courseName]);
 
                 this.sorter.OrderAndTake(marks, comparison, studentsToTake.Value);
             }
