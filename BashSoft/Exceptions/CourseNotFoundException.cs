@@ -4,11 +4,11 @@ using System.Text;
 
 namespace BashSoft.Exceptions
 {
-    public class NoCourseException:Exception
+    public class CourseNotFoundException:Exception
     {
         private const string NoCourse = "Course {0} can not be found";
 
-        public NoCourseException(string message)
+        public CourseNotFoundException(string message)
         :base(string.Format(NoCourse, message))
         {
             

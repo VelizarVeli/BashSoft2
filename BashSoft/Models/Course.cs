@@ -38,7 +38,7 @@ namespace BashSoft.Models
        {
            if (this.studentsByName.ContainsKey(student.Username))
            {
-               throw new DoubleEntryException(student.Username,this.Name);
+               throw new DuplicateEntryInStructureException(student.Username,this.Name);
            }
            this.studentsByName.Add(student.Username, student);
        }

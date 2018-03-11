@@ -38,7 +38,7 @@ namespace BashSoft.Models
             {
                 if (String.IsNullOrEmpty(value))
                 {
-                    throw new ArgumentNullException(nameof(this.userName),ExceptionMessages.NullOrEmptyValue);
+                    throw new InvalidStringException();
                 }
 
                 this.userName = value;
@@ -49,7 +49,7 @@ namespace BashSoft.Models
         {
             if (this.enrolledCourses.ContainsKey(course.name))
             {
-                throw new DoubleEntryException(this.userName, course.Name);
+                throw new DuplicateEntryInStructureException(this.userName, course.Name);
             }
             this.enrolledCourses.Add(course.name, course);
         }
@@ -58,7 +58,7 @@ namespace BashSoft.Models
         {
             if (!this.enrolledCourses.ContainsKey(courseName))
             {
-                throw new NoCourseException(courseName);
+                throw new CourseNotFoundException(courseName);
             }
 
             if (scores.Length > Course.NumberOfTasksOnExam)
