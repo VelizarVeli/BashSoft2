@@ -4,22 +4,20 @@ using System.Text;
 
 namespace BashSoft.Exceptions
 {
-    public class DuplicateEntryInStructureException:Exception
+    public class DuplicateEntryInStructureException : Exception
     {
-       
-            private const string DuplicateEntry = "The {0} already exists in {1}.";
 
-            public DuplicateEntryInStructureException(string message)
-                : base(message)
-            {
-            }
+        private const string DuplicateEntry = "The {0} already exists in {1}.";
 
-            public DuplicateEntryInStructureException(string entry, string structure)
-                : base(String.Format(DuplicateEntry, entry, structure))
-            {
+        public DuplicateEntryInStructureException(string message)
+            : base(message)
+        {
+        }
 
-            }
+        public DuplicateEntryInStructureException(string entry, string structure)
+            : base(String.Format(DuplicateEntry, entry, structure))
+        {
 
-        
+        }
     }
 }

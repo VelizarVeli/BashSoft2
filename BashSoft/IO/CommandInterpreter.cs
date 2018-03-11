@@ -1,5 +1,9 @@
 ﻿using System;
 using System.IO;
+using BashSoft.Exceptions;
+using BashSoft.IO;
+using BashSoft.IO.Commands;
+using BashSoft.NetCore.Executor.IO.Commands;
 
 namespace BashSoft
 {
@@ -18,100 +22,66 @@ namespace BashSoft
             this.inputOutputManager = inputOutputManager;
         }
 
+
+
         public void InterpredCommand(string input)
         {
             string[] data = input.Split(' ');
-            string command = data[0];
+            string commandName = data[0].ToLower();
 
             try
             {
-                this.ParseCommand(input, command, data);
+                Command command  = this.ParseCommand(input, commandName, data);
+                command.Execute();
             }
-            catch (DirectoryNotFoundException dnfe)
+            catch (Exception ex)
             {
-                OutputWriter.DisplayException(dnfe.Message);
-            }
-            catch (ArgumentOutOfRangeException aoore)
-            {
-                OutputWriter.DisplayException(aoore.Message);
-            }
-            catch (ArgumentException ae)
-            {
-                OutputWriter.DisplayException(ae.Message);
-            }
-            catch (Exception e)
-            {
-                OutputWriter.DisplayException(e.Message);
+                OutputWriter.DisplayException(ex.Message);
             }
         }
 
-        private void ParseCommand(string input, string command, string[] data)
+        private Command ParseCommand(string input, string command, string[] data)
         {
             switch (command)
             {
                 case "open":
-                    TryOpenFile(input, data);
-                    break;
+                    return new OpenFileCommand(input, data, this.judge, this.repository, this.inputOutputManager);
 
                 case "mkdir":
-                    TryCreateDirectory(input, data);
-                    break;
+                    return new MakeDirectoryCommand(input, data, this.judge, this.repository, this.inputOutputManager);
 
                 case "ls":
-                    TryTraverseFolders(input, data);
-                    break;
+                    return new TraverseFolderCommands(input, data, this.judge, this.repository, this.inputOutputManager);
 
                 case "cmp":
-                    TryCompareFiles(input, data);
-                    break;
+                    return new CompareFilesCommand(input, data, this.judge, this.repository, this.inputOutputManager);
 
                 case "cdRel":
-                    TryChangePathRelatively(input, data);
-                    break;
+                    return new ChangePathRelativelyCommand(input, data, this.judge, this.repository, this.inputOutputManager);
 
                 case "cdAbs":
-                    TryChangePathAbsolute(input, data);
-                    break;
+                    return new ChangePathRelativelyCommand(input, data, this.judge, this.repository, this.inputOutputManager);
 
                 case "readDb":
-                    TryReadDatabaseFromFile(input, data);
-                    break;
+                    return new ReadDatabaseCommand(input, data, this.judge, this.repository, this.inputOutputManager);
 
                 case "show":
-                    TryShowWantedData(input, data);
-                    break;
+                    return new ShowCommand(input, data, this.judge, this.repository, this.inputOutputManager);
 
                 case "help":
-                    TryGetHelp(input, data);
-                    break;
+                    return new HelpCommand(input, data, this.judge, this.repository, this.inputOutputManager);
 
                 case "filter":
-                    TryFilterAndTake(input, data);
-                    break;
+                    return new PrintFilteredStudentsCommand(input, data, this.judge, this.repository, this.inputOutputManager);
 
                 case "order":
-                    TryOrderAndTake(input, data);
-                    break;
+                    return new PrintOrderedStudentsCommand(input, data, this.judge, this.repository, this.inputOutputManager);
 
-                case "decOrder":
-                    // TODO
-                    break;
-
-                case "download":
-                    // TODO
-                    break;
-
-                case "downloadAsynch":
-                    // TODO
-                    break;
-
-                case "dropdb":
-                    TryDropDB(input, data);
-                    break;
+                  case "dropdb":
+                    return new DropDatabaseCommand(input, data, this.judge, this.repository, this.inputOutputManager);
 
                 default:
-                    DisplayInvalidCommandMessage(input);
-                    break;
+                    throw new InvalidCommandException(input);
             }
         }
 
