@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using BashSoft.Exceptions;
 using BashSoft.IO;
 using BashSoft.IO.Commands;
